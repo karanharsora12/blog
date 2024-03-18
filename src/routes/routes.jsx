@@ -3,6 +3,7 @@ import { SignIn, SignUp } from "@/pages/auth";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { Dashboard } from "@/layouts";
 import Categories from "@/pages/categories/Categories";
+import CategoryForm from "@/pages/categories/CategoryForm";
 import Subcategories from "@/pages/subcategories/Subcategories";
 
 const routes = createBrowserRouter([
@@ -36,7 +37,11 @@ const routes = createBrowserRouter([
       },
       {
         path: "categories",
-        element: <Categories/>
+        element: <Categories />,
+      },
+      {
+        path: "categories/add",
+        element: <CategoryForm />
       },
       {
         path: "blogs",

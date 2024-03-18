@@ -10,7 +10,7 @@ const Categories = () => {
         <div>
           <h2 className="text-2xl font-semibold">Categories</h2>
         </div>
-        <Button onClick={() => router.push("1")}>Add Category</Button>
+        <Button onClick={() => router.push("add")}>Add Category</Button>
       </div>
       <Card className="overflow-hidden xl:col-span-2 border border-blue-gray-100 shadow-sm">
         <h1>Categories</h1>

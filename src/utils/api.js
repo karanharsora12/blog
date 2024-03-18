@@ -9,7 +9,7 @@ export async function post(url, data) {
     Object.keys(data).map((key) => fromData.append(key, data[key]));
     return await apiClient.post(url, data, {
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "multipart/form-data",
         }
     })
 }
