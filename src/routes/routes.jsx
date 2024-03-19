@@ -44,6 +44,10 @@ const routes = createBrowserRouter([
         element: <CategoryForm />
       },
       {
+        path: "categories/:id",
+        element: <CategoryForm />
+      },
+      {
         path: "blogs",
         element: <h1>Blogs</h1>
       },
