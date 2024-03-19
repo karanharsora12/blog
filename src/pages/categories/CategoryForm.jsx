@@ -1,29 +1,47 @@
 import { Button, Card, CardBody, CardFooter, CardHeader, Input, Typography } from '@material-tailwind/react'
 import { Form, Formik, useFormik } from 'formik';
 import React, { useEffect, useState } from 'react'
-import { post } from "../../utils/api";
+import { get, post } from "../../utils/api";
 import { useRouter } from "../../routes/hooks/use-router"
+import { useParams } from 'react-router-dom';
 
 const CategoryForm = () => {
     
-    const [categoryImage, setCatgoryImage] = useState(null);
-    const [previewURL, setPreviewURL] = useState("");
     const router = useRouter();
+    const [categoryImage, setCatgoryImage] = useState(null);
+    const [category, setCategory] = useState({});
+    const [previewURL, setPreviewURL] = useState(null);
+    const { id } = useParams();
 
     const formik = useFormik({
         initialValues : {
-            category: "",
+            category: id ? category.category : "",
             category_image: categoryImage,
             status: "Active"
         },
+        enableReinitialize : true,
         onSubmit: (values) => {
-            post("/add/category", values).then((resp) => {
-                if(resp.data.success){
-                    router.back();
-                }
-            });
+            if (id) {
+                post(`/update/category/${id}`, values).then((resp) => {
+                    if(resp.data.success){
+                        router.back();
+                    }
+                })   
+            } else {
+                post("/add/category", values).then((resp) => {
+                    if(resp.data.success){
+                        router.back();
+                    }
+                });
+            }
         }
     });
+
+    const getCategory = async (id) => {
+        const response = await get(`/category/${id}`);
+        setCategory({...response.data.data});
+        setPreviewURL(`http://127.0.0.1:8000/storage/category_images/${response.data.data.category_image}`);
+    }
     
     useEffect(() => {
         if(categoryImage){
@@ -36,6 +54,12 @@ const CategoryForm = () => {
         }
     }, [categoryImage]);
 
+    useEffect(() => {
+        if(id){
+            getCategory(id);
+        }
+    },[]);
+
     return (
     <div className='mt-12'>
         <Formik initialValues={formik.initialValues}>
@@ -47,7 +71,7 @@ const CategoryForm = () => {
                         className="mb-4 grid h-28 place-items-center"
                     >
                         <Typography variant="h3" color="white">
-                            Add Category
+                            { id ? "Update" : "Add"} Category
                         </Typography>
                     </CardHeader>
                     <CardBody className="flex flex-col gap-4">
@@ -57,6 +81,7 @@ const CategoryForm = () => {
                                     label="Category Name" 
                                     size="lg" 
                                     name="category"
+                                    value={formik.values.category}
                                     onChange={formik.handleChange}
                                 />
                             </div>
@@ -64,7 +89,7 @@ const CategoryForm = () => {
                                 <div className="flex items-center justify-center w-full">
                                     <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                         {
-                                            categoryImage ?
+                                            previewURL ?
                                             <img src={previewURL} alt="" className='w-full h-64 rounded-lg' /> : 
                                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                                 <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" ariaHidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
@@ -82,7 +107,7 @@ const CategoryForm = () => {
                     </CardBody>
                     <CardFooter className="pt-0 flex justify-end">
                         <Button variant="gradient" type="submit">
-                            Save Cateogory
+                            { id ? "Update" :  "Save"} Cateogory
                         </Button>
                     </CardFooter>
                 </Card>

@@ -23,7 +23,7 @@ export async function update(url, data) {
     Object.keys(data).map((key) => fromData.append(key, data[key]));
     return await apiClient.patch(url, data, {
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "multipart/form-data",
         }
     })
 }
