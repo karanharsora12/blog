@@ -5,6 +5,11 @@ import { Dashboard } from "@/layouts";
 import Categories from "@/pages/categories/Categories";
 import CategoryForm from "@/pages/categories/CategoryForm";
 import Subcategories from "@/pages/subcategories/Subcategories";
+import SubcategoryForm from "@/pages/subcategories/SubcategoryForm";
+import Blogs from "@/pages/blogs/Blogs";
+import BlogForm from "@/pages/blogs/BlogForm";
+import Frontend from "@/layouts/Frontend";
+import BlogList from "@/pages/blogs/BlogList";
 
 const routes = createBrowserRouter([
   {
@@ -49,11 +54,37 @@ const routes = createBrowserRouter([
       },
       {
         path: "blogs",
-        element: <h1>Blogs</h1>
+        element: <Blogs/>
+      },
+      {
+        path: "blogs/add",
+        element: <BlogForm/>
+      },
+      {
+        path: "blogs/:id",
+        element: <BlogForm/>
       },
       {
         path: "subcategories",
         element: <Subcategories/>
+      },
+      {
+        path: "subcategories/add",
+        element: <SubcategoryForm />
+      },
+      {
+        path: "subcategories/:id",
+        element: <SubcategoryForm />
+      },
+    ]
+  },
+  {
+    path:"/home",
+    element:<Frontend/>,
+    children: [
+      {
+        path: "",
+        element: <BlogList/>
       }
     ]
   }
