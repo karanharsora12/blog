@@ -1,55 +1,51 @@
-import React, { useEffect, useState } from 'react'
-import { useRouter } from '@/routes/hooks/use-router';
+import React, { useEffect, useState } from 'react';
 import { PencilIcon,TrashIcon } from "@heroicons/react/24/solid";
 import {
-  ArrowDownTrayIcon,
-  MagnifyingGlassIcon,
-  PlusIcon
-} from "@heroicons/react/24/outline";
-import {
-  Card,
-  CardHeader,
-  Typography,
-  CardBody,
-  Chip,
-  CardFooter,
-  Avatar,
-  IconButton,
-  Input,
-} from "@material-tailwind/react";
-import apiClient from '@/utils/apiClient';
-import { del } from '@/utils/api';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,Tooltip } from '@mui/material';
+    ArrowDownTrayIcon,
+    MagnifyingGlassIcon,
+    PlusIcon
+  } from "@heroicons/react/24/outline";
+  import {
+    Card,
+    CardHeader,
+    Typography,
+    CardBody,
+    CardFooter,
+    Avatar,
+    IconButton,
+    Input,
+  } from "@material-tailwind/react";
+import { del, get } from '@/utils/api';
+import { useRouter } from '@/routes/hooks/use-router';
+import { Dialog, DialogActions, DialogContent, DialogContentText, Tooltip, DialogTitle, Button } from '@mui/material';
 
-const Categories = () => {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [categoryId, setCategoryId] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const TABLE_HEAD = ["Category", "Status", ""];
+const Blogs = () => {
+    const TABLE_HEAD = ["Title", "Category", "Subcategory", ""];
+    const [blogs, setBlogs] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [blogId, setBlogId] = useState(null)
+    const router = useRouter();
 
-  const getCategories = async () => {
-    let response = await apiClient.get("/categories");
-    if(response?.data?.success){
-      setCategories(response.data.data);
+    const getBlogs = async () => {
+        const { data } = await get("/blogs");
+        setBlogs(data?.data);
     }
-  }
 
-  const deleteCategory = async (id) => {
-    await del(`/delete/category/${id}`)
-    getCategories();
-  }
+    const deleteBlog = async (id) => {
+      const response = await del(`/delete/blog/${id}`);
+      getBlogs();
+    }
 
-  useEffect(() => {
-    getCategories();
-  },[]);
- 
+    useEffect(() => {
+        getBlogs();
+    }, []);
+
   return (
     <div className="mt-12">
       <div className="flex justify-end items-center mb-5">
         <Button className="flex items-center gap-3" onClick={() => router.push("add")}>
           <PlusIcon strokeWidth={2} className="h-4 w-4" />
-          Add Category
+          Add Blogs
         </Button>
       </div>
       <Card className="overflow-hidden h-full w-full xl:col-span-2 border border-blue-gray-100 shadow-sm">
@@ -57,7 +53,7 @@ const Categories = () => {
           <div className="mb-4 flex flex-col justify-between gap-8 md:flex-row md:items-center">
             <div>
               <Typography variant="h5" color="blue-gray">
-                Categories
+                Blogs
               </Typography>
             </div>
             <div className="flex w-full shrink-0 gap-2 md:w-max">
@@ -94,8 +90,8 @@ const Categories = () => {
               </tr>
             </thead>
             <tbody>
-              {categories.map((category, index) => {
-                  const isLast = index === categories.length - 1;
+              {blogs.map((blog, index) => {
+                  const isLast = index === blog.length - 1;
                   const classes = isLast
                     ? "p-4"
                     : "p-4 border-b border-blue-gray-50";
@@ -104,40 +100,59 @@ const Categories = () => {
                     <tr key={index}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
-                          <Avatar
-                            src={`http://127.0.0.1:8000/storage/category_images/${category.category_image}`}
-                            size="md"
-                            className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
-                          />
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-bold"
-                          >
-                            {category.category}
-                          </Typography>
+                            <Avatar
+                                src={`http://127.0.0.1:8000/storage/blog_images/${blog.image}`}
+                                size="md"
+                                className="border border-blue-gray-50 bg-blue-gray-50/50 object-contain p-1"
+                            />
+                            <div className="flex flex-col">
+                                <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-bold"
+                                >
+                                {blog?.title}
+                                </Typography>
+                                <Typography
+                                    variant="small"
+                                    color="blue-gray"
+                                    className="font-normal"  
+                                >
+                                {blog?.description}
+                                </Typography>
+                            </div>
                         </div>
                       </td>
                       <td className={classes}>
                         <div className="w-max">
-                          <Chip
-                            size="sm"
-                            variant="ghost"
-                            value={category.status}
-                            color={
-                              category.status === "Active"? "green": "red"
-                            }
-                          />
+                            <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"  
+                            >
+                                {blog?.category?.category}
+                            </Typography>
                         </div>
                       </td>
                       <td className={classes}>
-                        <Tooltip title="Edit Category">
-                          <IconButton variant="text" onClick={() => router.push(`${category.id}`)}>
+                        <div className="w-max">
+                            <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"  
+                            >
+                                {blog?.subcategory?.subcategory}
+                            </Typography>
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <Tooltip title="Edit Blog">
+                          <IconButton variant="text" onClick={() => router.push(`${blog.id}`)}>
                             <PencilIcon className="h-4 w-4" />
                           </IconButton>
                         </Tooltip>
-                        <Tooltip title="Delete Category">
-                          <IconButton variant="text" onClick={() => {setOpen(true); setCategoryId(category.id)}}>
+                        <Tooltip title="Delete Blog">
+                          <IconButton variant="text" onClick={() => {setBlogId(blog.id); setOpen(true)}}>
                             <TrashIcon className="h-4 w-4" color="red" />
                           </IconButton>
                         </Tooltip>
@@ -183,7 +198,7 @@ const Categories = () => {
       </Card>
       <Dialog
         open={open}
-        onClose={() => setCategoryId(null)}
+        onClose={() => setBlogId(null)}
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">
@@ -191,14 +206,14 @@ const Categories = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            By delete this category, blog related this category also will be delete
+            By delete this blog, This blog is delete permanently
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => setOpen(false)}>
             Disagree
           </Button>
-          <Button autoFocus variant='contained' onClick={() => {deleteCategory(categoryId); setCategoryId(null); setOpen(false)}}>
+          <Button autoFocus variant='contained' onClick={() => {deleteBlog(blogId); setBlogId(null); setOpen(false)}}>
             Agree
           </Button>
         </DialogActions>
@@ -207,4 +222,4 @@ const Categories = () => {
   )
 }
 
-export default Categories
+export default Blogs

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { get, post } from "../../utils/api";
 import { useRouter } from "../../routes/hooks/use-router"
 import { useParams } from 'react-router-dom';
+import { TextField } from '@mui/material';
 
 const CategoryForm = () => {
     
@@ -19,7 +20,7 @@ const CategoryForm = () => {
             category_image: categoryImage,
             status: "Active"
         },
-        enableReinitialize : true,
+        enableReinitialize: true,
         onSubmit: (values) => {
             if (id) {
                 post(`/update/category/${id}`, values).then((resp) => {
@@ -60,6 +61,10 @@ const CategoryForm = () => {
         }
     },[]);
 
+    useEffect(() => {
+        formik.setValues({ ...formik.values, category_image: categoryImage });
+    }, [categoryImage]);
+
     return (
     <div className='mt-12'>
         <Formik initialValues={formik.initialValues}>
@@ -77,11 +82,12 @@ const CategoryForm = () => {
                     <CardBody className="flex flex-col gap-4">
                             <div className="flex flex-wrap gap-10">
                             <div className="w-full">                         
-                                <Input 
+                                <TextField
+                                    fullWidth
                                     label="Category Name" 
                                     size="lg" 
                                     name="category"
-                                    value={formik.values.category}
+                                    value={formik.values.category ?? ""}
                                     onChange={formik.handleChange}
                                 />
                             </div>
@@ -99,7 +105,7 @@ const CategoryForm = () => {
                                                 <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                                             </div>
                                         }
-                                        <input id="dropzone-file" onChange={(e) => {setCatgoryImage(e.target.files[0]); formik.setFieldValue("category_image", e.target.files[0])}} type="file" className="hidden" />
+                                        <input id="dropzone-file" onChange={(e) => {setCatgoryImage(e.target.files[0])}} type="file" className="hidden" />
                                     </label>
                                 </div>
                             </div>
