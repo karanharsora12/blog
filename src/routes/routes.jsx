@@ -10,6 +10,7 @@ import Blogs from "@/pages/blogs/Blogs";
 import BlogForm from "@/pages/blogs/BlogForm";
 import Frontend from "@/layouts/Frontend";
 import BlogList from "@/pages/blogs/BlogList";
+import Blog from "@/pages/blogs/Blog";
 
 const routes = createBrowserRouter([
   {
@@ -79,12 +80,16 @@ const routes = createBrowserRouter([
     ]
   },
   {
-    path:"/home",
+    path:"/home/",
     element:<Frontend/>,
     children: [
       {
         path: "",
         element: <BlogList/>
+      },
+      {
+        path: "blogs/:id",
+        element: <Blog/>
       }
     ]
   }
